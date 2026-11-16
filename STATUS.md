@@ -1,7 +1,7 @@
-# สถานะ YOLO_Nano_Seg_CCTV600_Benchmark
+# สถานะ nano
 
-Run `cctv600-20261116T073208561699Z`
+Run `cctv600-20261116T073208561699Z` · ตรวจปิดรอบเมื่อ 2026-11-16T16:13:20+07:00 (เวลาไทย)
 
-Accuracy complete 3/3 models.
+Quality COMPLETE 3/3 models × 600 images. Clean timing COMPLETE 3/3 models.
 
-อ่าน [ผลรวม](RESULTS_SUMMARY_TH.md) และ [วิธีดำเนินงาน](EXPERIMENT_PROTOCOL.md)
+อ่าน [ผลประเมินและภาพประกอบ](RESULTS_SUMMARY_TH.md) หลักฐาน run เดิมเก็บไว้ใน outputs
