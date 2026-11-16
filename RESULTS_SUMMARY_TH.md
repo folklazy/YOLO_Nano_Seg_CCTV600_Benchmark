@@ -1,51 +1,65 @@
-# ผลประเมิน YOLO กลุ่ม nano บน CCTV600
+# สรุปผล Nano (N) บน CCTV600
 
-Run `cctv600-20261116T073208561699Z` · ตรวจปิดรอบเมื่อ 2026-11-16T16:13:20+07:00 (เวลาไทย)
+## สรุปใน 1 นาที
 
-คุณภาพครบ 3/3 โมเดล ตัวละ 600 ภาพ GT เข้าเกณฑ์ 769 คน คะแนน Box AP สูงสุดในกลุ่มคือ **yolo26n-seg.pt 40.817%**
+- ทดสอบ 3 pretrained checkpoints บน 600 ภาพชุดเดียวกันและ GT เข้าเกณฑ์ 769 คน
+- Input 640×640, batch 1, FP32 บน Tesla T4 ไม่มี fine-tuning ใน benchmark รอบนี้
+- คุณภาพครบ 600 IDs ต่อโมเดล และเวลาครบ 3 clean rounds ต่อโมเดล
+- Box AP สูงสุดเป็น yolo26n-seg.pt ที่ 40.817%
+- Adapter time ต่ำสุดเป็น yolo11n-seg.pt ที่ 63.587 ms/ภาพ
+- Allocated VRAM ต่ำสุดเป็น yolo11n-seg.pt ที่ 804.799 MiB
 
-## คุณภาพกรอบบุคคล
+## ผลลัพธ์หลัก
 
-| Model | AP % | AP50 % | AP75 % | P % | R % | F1 % | TP | FP | FN |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| yolo26n-seg.pt | 40.817 | 61.914 | 45.176 | 77.822 | 51.105 | 61.695 | 393 | 112 | 376 |
-| yolo11n-seg.pt | 39.493 | 59.325 | 44.019 | 77.339 | 48.375 | 59.520 | 372 | 109 | 397 |
-| yolov8n-seg.pt | 39.903 | 61.634 | 44.693 | 78.835 | 52.796 | 63.240 | 406 | 109 | 363 |
+| Model | Box AP % | AP75 % | Recall % | Forward ms/ภาพ | Adapter ms/ภาพ | FPS | Allocated MiB |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| yolo26n-seg.pt | 40.817 | 45.176 | 51.105 | 13.818 | 69.345 | 14.421 | 1344.222 |
+| yolo11n-seg.pt | 39.493 | 44.019 | 48.375 | 11.861 | 63.587 | 15.727 | 804.799 |
+| yolov8n-seg.pt | 39.903 | 44.693 | 52.796 | 9.923 | 79.317 | 12.608 | 1154.993 |
 
-AP ใช้ IoU 0.50–0.95, 101 recall points และ maxDet 200 P/R/F1 ใช้ confidence ≥0.25 และ IoU ≥0.50 จับ valid GT ก่อนพิจารณา ignore union
+Box AP/P/R/F1 แสดงเป็นเปอร์เซ็นต์ Forward และ adapter เป็น ms/ภาพ, FPS = 1000 / mean adapter ms และ VRAM เป็น peak allocated MiB
 
-## ความเร็ว
+## ผู้ชนะของแต่ละด้าน
 
-| Model | Clean rounds | Forward ms/ภาพ | Adapter ms/ภาพ | FPS | Allocated MiB |
-| --- | --- | --- | --- | --- | --- |
-| yolo26n-seg.pt | 3/3 | 13.818 | 69.345 | 14.421 | 1344.222 |
-| yolo11n-seg.pt | 3/3 | 11.861 | 63.587 | 15.727 | 804.799 |
-| yolov8n-seg.pt | 3/3 | 9.923 | 79.317 | 12.608 | 1154.993 |
+| ด้าน | โมเดล | ค่าที่วัด |
+| --- | --- | --- |
+| Box AP | yolo26n-seg.pt | 40.817 % |
+| AP75 | yolo26n-seg.pt | 45.176 % |
+| Recall | yolov8n-seg.pt | 52.796 % |
+| Forward time | yolov8n-seg.pt | 9.923 ms/ภาพ |
+| Adapter time | yolo11n-seg.pt | 63.587 ms/ภาพ |
+| Adapter FPS | yolo11n-seg.pt | 15.727 ภาพ/วินาที |
+| Allocated VRAM | yolo11n-seg.pt | 804.799 MiB |
 
-เวลาหลักมาจาก 100 ภาพเดิม × 3 clean rounds หลัง warmup 10 calls ต่อรอบ Adapter รวม preprocess/H2D + forward + postprocess/native-mask transfer ส่วน input read/decode, RLE และเขียนไฟล์วัดแยก FPS = 1000 / mean adapter ms
+## สิ่งที่ตัวเลขบอกเรา
 
-## การเติมรอบเวลาและประวัติเดิม
+- yolo26n-seg.pt มี AP สูงกว่า yolov8n-seg.pt 0.914 จุดเปอร์เซ็นต์
+- ตัวนำ AP มี TP 393, FP 112 และ FN 376 ที่ confidence ≥0.25 / bbox IoU ≥0.50
+- Adapter ของ yolo11n-seg.pt เร็วกว่าตัวนำ AP 5.758 ms/ภาพ
+- ตัวนำ AP ใช้ allocated VRAM มากกว่าค่าต่ำสุด 539.423 MiB
 
-เวลาหลักครบทั้ง 17 ตัวแล้ว ใช้ 47 clean rounds จาก run เดิม ร่วมกับ 4 clean rounds จาก segment `cctv600-timing-cont-20261116T090209308785Z` ตามการอนุมัติของผู้ใช้ รวม 51 รอบ × 100 ภาพ = 5,100 measured observations และ warmup ที่ตรวจรับ 510 calls
+## บทบาทของแต่ละโมเดล
 
-ส่วนที่เติมคือ YOLO26n รอบ 3, YOLO11n รอบ 2 และ 3, YOLOv8n รอบ 3 ใช้ภาพ ลำดับ input, checkpoint, environment, preprocessing, source, batch, FP32, guards และ timer เดิม เปลี่ยนเฉพาะ run ID/output path และคิว 4 รอบที่ขาด เก็บ manifest ระบุ compatibility และ hashes การเติมครั้งนี้ใช้ 400 measured calls กับ warmup 40 calls เพิ่มเติม ไม่มี quality calls
+| โมเดล | จุดเด่นที่วัดได้ | ข้อแลกเปลี่ยน | เงื่อนไขการเลือก |
+| --- | --- | --- | --- |
+| yolo26n-seg.pt | Box AP สูงสุดในกลุ่ม | Recall ห่างตัวนำ 1.691 pp, adapter เพิ่ม 5.758 ms, VRAM เพิ่ม 539.423 MiB | เน้น Box AP |
+| yolo11n-seg.pt | adapter เร็วสุดในกลุ่ม, allocated VRAM ต่ำสุดในกลุ่ม | AP ห่างตัวนำ 1.324 pp, Recall ห่างตัวนำ 4.421 pp | จำกัดเวลา adapter, จำกัด allocated VRAM |
+| yolov8n-seg.pt | Precision สูงสุด, Recall สูงสุด, forward เร็วสุดในกลุ่ม | AP ห่างตัวนำ 0.914 pp, adapter เพิ่ม 15.730 ms, VRAM เพิ่ม 350.193 MiB | ลดสัดส่วนกรอบเกิน, เก็บคนให้ครบ |
 
-YOLO11n รอบ 2 เดิมเป็น `CONTAMINATED` มี 100 observations และ warmup 10 calls เก็บไว้ครบโดยตัดออกจากสถิติเวลาหลัก ค่าใช้จ่าย model calls ของ run หลักและ continuation รวมคุณภาพ 10,200 + timing ที่ตรวจรับ 5,610 + timing ที่ปนเปื้อน 110 = 15,920 calls
+## ข้อแลกเปลี่ยนหลัก
 
-ผู้ใช้อนุมัติพักเฉพาะ worker เว็บ Body Extraction ชั่วคราว ตรวจแล้วไม่มีงาน RUNNING ก่อนพัก API และฐานข้อมูลคงทำงาน หลัง CUDA contexts เดิมคืนทรัพยากรจึงเปิด timing แบบ detached ใน tmux จากนั้นเปิด worker เว็บคืน หลักฐาน restoration เก็บแยก การตรวจ GPU ทุกช่วงที่ timer เดิมเก็บไว้ผ่านเกณฑ์ไม่มี external compute PID
+### คุณภาพกับความเร็ว
 
-Continuation จบเมื่อ 2026-11-16T16:04:39+07:00 (เวลาไทย) Original `COMPLETION.json` ที่เคยระบุ timing incomplete ยังคงเดิม สถานะรวมหลัง reconciliation อ่านจาก `metrics/CLOSEOUT.json` และ `metrics/RESULT_INDEX.json`
+ตัวนำ AP มี AP 40.817% ส่วนตัว adapter เร็วสุดมี AP 39.493% ทั้งสองเป้าหมายอาจได้ checkpoint เดียวกัน ให้พิจารณา forward กับ adapter แยกกัน เพราะ native mask postprocessing มีต้นทุนอยู่หลัง model forward
 
-## กราฟและภาพตัวอย่าง
+### คุณภาพกับหน่วยความจำ
 
-![PR curve](https://raw.githubusercontent.com/folklazy/YOLO_Instance_Segmentation_CCTV600_Scaling_Study/main/metrics/plots/nano_pr_curve.png)
+ตัว allocated VRAM ต่ำสุดมี AP 39.493% และใช้ 804.799 MiB ค่า allocator peak นี้ครอบคลุม resident model ใน benchmark หลัง warmup ส่วน memory รวมในระบบให้ตรวจ CUDA context และบริการที่รันร่วมด้วย
 
-![F1-confidence curve](https://raw.githubusercontent.com/folklazy/YOLO_Instance_Segmentation_CCTV600_Scaling_Study/main/metrics/plots/nano_f1_curve.png)
+## ข้อควรระวังในการตีความ
 
-เส้น F1 แสดงผลของ threshold ต่อ trade-off โดย main threshold คง 0.25 ภาพเปรียบเทียบ 16 ภาพเดิมเปิดในเครื่องที่ `outputs/cctv600-20261116T073208561699Z/gallery/index.html` ของ repo นี้
+GT ใช้ visible bbox ของคนด้านยาว ≥50 px รวม 769 คน การรับรอง person inventory อิงการตรวจรับของผู้จัดทำ dataset ยังไม่มี independent inventory review ครบชุด ขนาดโมเดลและข้อมูล pretraining ต่างกัน การเปรียบเทียบนี้ยังไม่แยกสาเหตุทาง architecture ไม่มี uncertainty analysis และ Person Mask AP ต้องมี GT silhouette เพิ่ม Adapter time ครอบคลุม preprocessing/H2D, forward และ postprocessing/native-mask transfer โดย input I/O, RLE, writing, model loading และ queue time มีขอบเขตแยก
 
-## แหล่งผลและข้อจำกัด
+## อ่านต่อ
 
-[ตารางกลุ่ม](metrics/TIER_RESULTS.csv) และ [canonical summary](metrics/RESULTS.json) มาจาก saved packets ที่ตรวจรับแล้ว Source/scientific bindings คงเดิม อ่าน [รายงานรวม](https://github.com/folklazy/YOLO_Instance_Segmentation_CCTV600_Scaling_Study/blob/main/MASTER_RESULTS.md), [สูตรตัวชี้วัด](https://github.com/folklazy/YOLO_Instance_Segmentation_CCTV600_Scaling_Study/blob/main/METRIC_GUIDE_TH.md) และ [ผลตรวจปิดรอบ](https://github.com/folklazy/YOLO_Instance_Segmentation_CCTV600_Scaling_Study/blob/main/metrics/CLOSEOUT.json)
-
-งานนี้วัด visible bbox บน CCTV600 ของ pretrained segmentation checkpoints ส่วน native masks เก็บเป็น output diagnostics ยังไม่มี GT silhouette สำหรับ Person Mask AP ไม่มี human parsing/color/tracking score และยังไม่มี uncertainty analysis
+[รายงานเทคนิค](REPORT.md) · [การวิเคราะห์ภาพและข้อผิดพลาด](PRESENTATION_SUMMARY_TH.md) · [ตารางเต็ม](metrics/TIER_RESULTS.csv) · [สูตรตัวชี้วัด](https://github.com/folklazy/YOLO_Instance_Segmentation_CCTV600_Scaling_Study/blob/main/METRIC_GUIDE_TH.md)
