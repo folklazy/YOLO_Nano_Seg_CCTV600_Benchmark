@@ -1,0 +1,56 @@
+{
+  "run_id": "cctv600-20261116T073208561699Z",
+  "models": [
+    {
+      "model": "yolo26n-seg.pt",
+      "membership": null,
+      "primary": null,
+      "active_timing": null,
+      "groups": null,
+      "confidence_curve": null,
+      "checkpoint_sha256": "361fbfabab285c3237700b6bb91d7ecfa602cd945fffda8dbe1242829b71e73f",
+      "scientific_binding": "aa621de9ab1ca797a8e103df3bfb21f87307fc436f4701da7b094df33e8a68eb",
+      "timing": {
+        "clean_rounds": 0,
+        "expected_rounds": 3,
+        "measured_images": 0,
+        "state": "INCOMPLETE",
+        "primary": null
+      }
+    },
+    {
+      "model": "yolo11n-seg.pt",
+      "membership": null,
+      "primary": null,
+      "active_timing": null,
+      "groups": null,
+      "confidence_curve": null,
+      "checkpoint_sha256": "55ed65c56c91713d23e8402371c6c49a6fd84f257f7dce452e8d70e41dcbe152",
+      "scientific_binding": "aa621de9ab1ca797a8e103df3bfb21f87307fc436f4701da7b094df33e8a68eb",
+      "timing": {
+        "clean_rounds": 0,
+        "expected_rounds": 3,
+        "measured_images": 0,
+        "state": "INCOMPLETE",
+        "primary": null
+      }
+    },
+    {
+      "model": "yolov8n-seg.pt",
+      "membership": null,
+      "primary": null,
+      "active_timing": null,
+      "groups": null,
+      "confidence_curve": null,
+      "checkpoint_sha256": "a7cd8f929e1903d78a12a48efecab430209f18dc46cb96c3599a5980c63c423c",
+      "scientific_binding": "aa621de9ab1ca797a8e103df3bfb21f87307fc436f4701da7b094df33e8a68eb",
+      "timing": {
+        "clean_rounds": 0,
+        "expected_rounds": 3,
+        "measured_images": 0,
+        "state": "INCOMPLETE",
+        "primary": null
+      }
+    }
+  ]
+}
